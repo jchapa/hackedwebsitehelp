@@ -13,14 +13,30 @@
 
 // INCLUDE CONFIG
 require_once "config/core.config.php";
+require_once "config/data.config.php";
 
 // Setup entities
-require_once "app/User/CookieJar.class.php";
+require_once "app/cookie/CookieJar.class.php";
 require_once "app/user/User.class.php";
 
 
 // Setup Cookie Jar
 $oCookieJar = new CookieJar();
+
+// Setup DB context
+// TODO: Normalize for other data stores
+$oDataContext = new SQLite3(DATA_SQLITE3_DB_FILENAME);
+
+$mUserId = null;
+
+$aCookies = $oCookieJar->GetAllCookies();
+
+if (isset($aCookies["USER"]))
+{
+    $mUserId = $aCookies["USER"]->getCookieData();
+}
+
+$oUser = new User($oDataContext, $mUserId);
 
 // See if user exists, load if he does
 

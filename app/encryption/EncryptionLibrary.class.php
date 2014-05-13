@@ -1,5 +1,5 @@
 <?php
-require_once "../../config/encryption.config.php";
+require_once "config/encryption.config.php";
 class EncryptionLibrary
 {
     const CIPHER = MCRYPT_RIJNDAEL_128; // Rijndael-128 is AES

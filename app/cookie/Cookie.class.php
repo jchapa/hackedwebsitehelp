@@ -1,5 +1,5 @@
 <?php
-require_once "../encryption/EncryptionLibrary.class.php";
+require_once "app/encryption/EncryptionLibrary.class.php";
 
 class Cookie
 {
@@ -21,9 +21,18 @@ class Cookie
      *
      * @return string
      */
-    public function getCookieNameWithPrefix($strCookie)
+
+    public function getCookieName($bWithPrefix = false)
     {
-        return COOKIE_PREFIX . $strCookie;
+        $strRetval = "";
+
+        if ($bWithPrefix)
+        {
+            $strRetval .= COOKIE_PREFIX;
+        }
+        $strRetval .= $this->m_strCookieType;
+
+        return $strRetval;
     }
 
     public function destroyCookie()

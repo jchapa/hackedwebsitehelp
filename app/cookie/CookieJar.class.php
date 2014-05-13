@@ -1,5 +1,5 @@
 <?php
-require_once "../../config/cookie.config.php";
+require_once "config/cookie.config.php";
 require_once "Cookie.class.php";
 
 class CookieJar
@@ -48,6 +48,11 @@ class CookieJar
         return $strRetval;
     }
 
+    public function AddCookie(Cookie $oCookie)
+    {
+        $this->m_aCookies[$oCookie->getCookieName()] = $oCookie;
+    }
+
     /**
      * Stores all cookies in the jar.
      * Should only call this once
@@ -58,5 +63,11 @@ class CookieJar
         {
             $oCookie->storeCookie();
         }
+    }
+
+// TODO: MAke this suck less (e.g. GetCookieInJar($strCookie)
+    public function GetAllCookies()
+    {
+        return $this->m_aCookies;
     }
 }
