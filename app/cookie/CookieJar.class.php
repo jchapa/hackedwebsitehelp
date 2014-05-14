@@ -1,6 +1,7 @@
 <?php
 require_once "config/cookie.config.php";
-require_once "Cookie.class.php";
+require_once "app/cookie/Cookie.class.php";
+require_once "app/cookie/CookieTypes.enum.php";
 
 class CookieJar
 {
@@ -15,7 +16,7 @@ class CookieJar
         // We're only allowed to modify our own cookies
         $aAllCookies = $_COOKIE;
         // Decryption Lib
-        $oDecrypt = new EncryptionLibrary();
+        //$oDecrypt = new EncryptionLibrary();
 
         $aCookies = array_filter($_COOKIE, function($strData) use (&$aAllCookies) {
                 $bRetval = false;
@@ -30,7 +31,8 @@ class CookieJar
         // Let's go through any existing cookies
         foreach ($aCookies as $strCookie => $mData)
         {
-            $oCookie = new Cookie(Cookie::stripCookiePrefix($strCookie), $oDecrypt->decrypt($mData));
+            //$oCookie = new Cookie(Cookie::stripCookiePrefix($strCookie), $oDecrypt->decrypt($mData));
+            $oCookie = new Cookie(Cookie::stripCookiePrefix($strCookie), $mData);
             $this->m_aCookies[Cookie::stripCookiePrefix($strCookie)] = $oCookie;
 
             unset ($strCookie, $mData, $oCookie);

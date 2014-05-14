@@ -12,15 +12,20 @@ class User extends SQLiteDataBoundEntity
     protected $m_strCreateTable  =<<<EOF
     CREATE TABLE {table_prefix}USER
     (
-        user_id INT PRIMARY KEY NOT NULL,
+        user_id INTEGER PRIMARY KEY NOT NULL,
         identifier TEXT UNIQUE NOT NULL
     );
 EOF;
 
+    public $m_oUserCookie;
+    public $m_bUserIsNew;
+
+    //** PRPOPERTIES */
     public $strIdentifier;
 
     public function __construct($oDataObject, $iUserId = null)
     {
+        parent::__construct($oDataObject);
         if (null !== $iUserId)
         {
             if (!parent::LoadRecord($iUserId, "identifier"))
@@ -31,6 +36,7 @@ EOF;
         else
         {
             // Make a new user!
+            $this->m_bUserIsNew = true;
             $this->strIdentifier = $this->GenerateUserId();
             if (!$this->InsertRecord())
             {
@@ -38,12 +44,9 @@ EOF;
             }
             else
             {
-                // Now save this user's cookie
-                $oUserCookie = new Cookie("USER", $this->strIdentifier);
+                $this->m_oUserCookie = new Cookie("USER", $this->strIdentifier, false, true);
             }
         }
-
-        parent::__construct($oDataObject);
     }
 
     private function GenerateUserId()

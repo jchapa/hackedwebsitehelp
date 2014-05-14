@@ -9,10 +9,12 @@ class Cookie
     protected $m_bShouldDestroy = false;
     protected $m_bIsNew;
 
-    public function __construct($strCookieType, $mCookieData, $bShouldDestroy = false)
+    public function __construct($strCookieType, $mCookieData, $bShouldDestroy = false, $bIsNew = false)
     {
         $this->m_strCookieType = $strCookieType;
         $this->m_mCookieData = $mCookieData;
+        $this->m_bIsNew = $bIsNew;
+        $this->m_bShouldDestroy = $bShouldDestroy;
     }
 
     /**
@@ -47,9 +49,9 @@ class Cookie
     public function storeCookie()
     {
         // Only do work if the cookie is dirty
-        if ($this->m_bIsDirty)
+        if ($this->m_bIsDirty || $this->m_bIsNew)
         {
-            $strCookieName = $this->getCookieNameWithPrefix($this->m_strCookieType);
+            $strCookieName = $this->getCookieName($this->m_strCookieType, true);
             $strCookieData = $this->m_mCookieData;
             $strCookieExp = time() + (86400 * 365);
             $strCookiePath = "/";
@@ -62,9 +64,9 @@ class Cookie
             }
             else
             {
-                $oEncrypt = new EncryptionLibrary();
+                //$oEncrypt = new EncryptionLibrary();
 
-                $strCookieData = $oEncrypt->encrypt($strCookieData);
+                //$strCookieData = $oEncrypt->encrypt($strCookieData);
             }
 
             setcookie($strCookieName,

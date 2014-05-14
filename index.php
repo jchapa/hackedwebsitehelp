@@ -38,6 +38,13 @@ if (isset($aCookies["USER"]))
 
 $oUser = new User($oDataContext, $mUserId);
 
+
+
+// Add to jar
+if ($oUser->m_bUserIsNew)
+{
+    $oCookieJar->AddCookie($oUser->m_oUserCookie);
+}
 // See if user exists, load if he does
 
 
@@ -49,3 +56,6 @@ $oUser = new User($oDataContext, $mUserId);
 
 // If user does not exist, create a new one and give him a theme
 
+// Store all our data
+$oCookieJar->storeCookies();
+echo $oUser->strIdentifier;

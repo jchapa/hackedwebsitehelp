@@ -50,7 +50,10 @@ abstract class SQLiteDataBoundEntity
 
     /**
      * Loads up the object
-     * @param $iEntityId
+     *
+     * @param      $iEntityId
+     *
+     * @param null $strColumn
      *
      * @return DataBoundEntity
      */
@@ -66,7 +69,7 @@ abstract class SQLiteDataBoundEntity
         $strSQL = $this->GetSelectSQL();
 
         $aReplacements = array(
-            "{entity_id}" => $iEntityId,
+            "{key_id}" => $iEntityId,
             "{table_name}" => $this->m_strTableName,
             "{where_column}" => $strColumn,
         );
@@ -98,7 +101,7 @@ abstract class SQLiteDataBoundEntity
                     {
                         if (isset($oRow[$strColumn]))
                         {
-                            $this->${$strVar} = $oRow[$strColumn];
+                            $this->${strVar} = $oRow[$strColumn];
                         }
                         unset($strColumn, $strVar);
                     }
@@ -115,8 +118,10 @@ abstract class SQLiteDataBoundEntity
 
     /**
      * Returns a collection of this object
+     *
      * @param $aRestrictions
      *
+     * @throws BadMethodCallException
      * @return array(DataBoundEntity)
      */
     protected function SelectDataSet($aRestrictions)
@@ -145,9 +150,10 @@ abstract class SQLiteDataBoundEntity
 
     }
 
+
     private function DoesTableExist()
     {
-        $strSQL = "SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';";
+        $strSQL = 'SELECT name FROM sqlite_master WHERE type="table" AND name="{table_name}";';
         $strSQL = str_replace("{table_name}", DATA_SQLITE3_DB_TABLE_PREFIX . $this->m_strTableName, $strSQL);
         $strSQL = SQLite3::escapeString($strSQL);
 
@@ -157,13 +163,13 @@ abstract class SQLiteDataBoundEntity
 
     protected function GetSelectSQL()
     {
-        $strRetval = "SELECT * FROM {table_name} WHERE {where_column} = {key_id}";
+        $strRetval = 'SELECT * FROM ' . DATA_SQLITE3_DB_TABLE_PREFIX . '{table_name} WHERE {where_column} = "{key_id}"';
         return $strRetval;
     }
 
     protected function GetInsertSQL()
     {
-        $strRetval = "INSERT INTO {table_name} (";
+        $strRetval = "INSERT INTO " . DATA_SQLITE3_DB_TABLE_PREFIX . $this->m_strTableName . " (";
 
         foreach ($this->m_aColumns as $strColumn => $strVar)
         {
@@ -175,7 +181,7 @@ abstract class SQLiteDataBoundEntity
 
         foreach ($this->m_aColumns as $strColumn => $strVar)
         {
-            $strRetval .= "'$this->${strVar}'" . ",";
+            $strRetval .= '"' . $this->${strVar} . '"' . ",";
         }
 
         $strRetval = rtrim($strRetval, ",");
@@ -189,6 +195,7 @@ abstract class SQLiteDataBoundEntity
 
     /**
      * Deletes the current record
+     * @throws BadMethodCallException
      * @return mixed
      */
     protected function DeleteRecord()
