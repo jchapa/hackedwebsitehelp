@@ -88,32 +88,56 @@ abstract class SQLiteDataBoundEntity
         }
         else
         {
-            $bFirstRow = true;
-            while ($oRow = $oData->fetchArray())
-            {
-                if ($bFirstRow)
-                {
-                    $bFirstRow = false;
-
-                    $this->m_iEntityId = $oRow[$this->m_strEntityIdColumn];
-
-                    foreach($this->m_aColumns as $strColumn => $strVar)
-                    {
-                        if (isset($oRow[$strColumn]))
-                        {
-                            $this->${strVar} = $oRow[$strColumn];
-                        }
-                        unset($strColumn, $strVar);
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
+            $this->PopulateObjectFromData($oData);
         }
 
         return $bRetval;
+    }
+
+    protected function PopulateObjectFromData($oData)
+    {
+        // TODO: Need to rework this "First row" business. Only 1 row of data should be passed in to begin with
+        $bFirstRow = true;
+        while ($oRow = $oData->fetchArray())
+        {
+            if ($bFirstRow)
+            {
+                $bFirstRow = false;
+
+                $this->m_iEntityId = $oRow[$this->m_strEntityIdColumn];
+
+                foreach($this->m_aColumns as $strColumn => $strVar)
+                {
+                    if (isset($oRow[$strColumn]))
+                    {
+                        $this->${strVar} = $oRow[$strColumn];
+                    }
+                    unset($strColumn, $strVar);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    /**
+     * @return SQLite3Result
+     */
+    protected function SelectAll()
+    {
+        $strSQL = $this->GetSelectSQL(false);
+
+        $aReplacements = array(
+            "{table_name}" => $this->m_strTableName
+        );
+
+        $strSQL = str_replace(array_keys($aReplacements), array_values($aReplacements), $strSQL);
+        $strSQL = $this->m_oDataObject->escapeString($strSQL);
+
+        $oData = $this->m_oDataObject->query($strSQL);
+        return $oData;
     }
 
     /**
@@ -161,9 +185,13 @@ abstract class SQLiteDataBoundEntity
         return $bRetval;
     }
 
-    protected function GetSelectSQL()
+    protected function GetSelectSQL($bUseWhere = true)
     {
-        $strRetval = 'SELECT * FROM ' . DATA_SQLITE3_DB_TABLE_PREFIX . '{table_name} WHERE {where_column} = "{key_id}"';
+        $strRetval = 'SELECT * FROM ' . DATA_SQLITE3_DB_TABLE_PREFIX . '{table_name}';
+        if ($bUseWhere)
+        {
+            $strRetval .= 'WHERE {where_column} = "{key_id}"';
+        }
         return $strRetval;
     }
 

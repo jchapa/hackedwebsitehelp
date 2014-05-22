@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * Simple administrative page
+ */
+

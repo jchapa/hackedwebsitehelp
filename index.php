@@ -12,50 +12,25 @@
  ***************************************************************************************/
 
 // INCLUDE CONFIG
-require_once "config/core.config.php";
-require_once "config/data.config.php";
+require_once "app/page/ThemePage.class.php";
 
-// Setup entities
-require_once "app/cookie/CookieJar.class.php";
-require_once "app/user/User.class.php";
-
-
-// Setup Cookie Jar
-$oCookieJar = new CookieJar();
-
-// Setup DB context
-// TODO: Normalize for other data stores
-$oDataContext = new SQLite3(DATA_SQLITE3_DB_FILENAME);
-
-$mUserId = null;
-
-$aCookies = $oCookieJar->GetAllCookies();
-
-if (isset($aCookies["USER"]))
+class IndexPage extends ThemePage
 {
-    $mUserId = $aCookies["USER"]->getCookieData();
+    function __construct()
+    {
+        parent::__construct();
+    }
+
+    function __destruct()
+    {
+        parent::__destruct();
+    }
+
+    function main()
+    {
+
+    }
 }
 
-$oUser = new User($oDataContext, $mUserId);
-
-
-
-// Add to jar
-if ($oUser->m_bUserIsNew)
-{
-    $oCookieJar->AddCookie($oUser->m_oUserCookie);
-}
-// See if user exists, load if he does
-
-
-// If user exists, see if he has a theme
-
-
-// If user has no theme, or theme has been disabled, give him a new one
-
-
-// If user does not exist, create a new one and give him a theme
-
-// Store all our data
-$oCookieJar->storeCookies();
-echo $oUser->strIdentifier;
+$oPage = new IndexPage();
+$oPage->main();

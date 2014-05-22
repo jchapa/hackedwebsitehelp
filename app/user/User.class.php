@@ -13,15 +13,17 @@ class User extends SQLiteDataBoundEntity
     CREATE TABLE {table_prefix}USER
     (
         user_id INTEGER PRIMARY KEY NOT NULL,
-        identifier TEXT UNIQUE NOT NULL
+        identifier TEXT UNIQUE NOT NULL,
+        theme TEXT
     );
 EOF;
 
     public $m_oUserCookie;
     public $m_bUserIsNew;
 
-    //** PRPOPERTIES */
+    /** PROPERTIES **/
     public $strIdentifier;
+    public $iThemeId;
 
     public function __construct($oDataObject, $iUserId = null)
     {
@@ -41,10 +43,6 @@ EOF;
             if (!$this->InsertRecord())
             {
                 throw new Exception("Unable to save new user!");
-            }
-            else
-            {
-                $this->m_oUserCookie = new Cookie("USER", $this->strIdentifier, false, true);
             }
         }
     }
